@@ -1,27 +1,35 @@
 import requests
 from bs4 import BeautifulSoup
 
-# Make sure user enters 'a' or 'c'
-lvl = 'e'
-while lvl != 'a' or lvl != 'c':
-    lvl = input("Enter 'a' for ATP matches or 'c' for Challenger matches.\n")
-    if lvl == 'a' or lvl == 'c':
-        break
-
-if lvl == "a":
-    url = 'https://www.atptour.com/en/scores/current/'
-else:
-    url = 'https://www.atptour.com/en/scores/current-challenger/'
+url = 'http://www.espn.com/tennis/dailyResults'
 
 html = requests.get(url)
 
-s = BeautifulSoup(html.content, 'html.parser')
+s = BeautifulSoup(html.text, 'lxml')
 
-# results = s.find(id=id="lastEventsPlayedStandAloneNoSlider")
+all_scores = s.find('div', class_='span-4')
 
-results = s.select('#lastEventsPlayedStandAloneNoSlider > div > div > div.rsContent.rsActiveSlide > div > table > tbody > tr > td.title-content')
-print(results[0].getText())
+num = len(all_scores.find_all('div', class_='scoreHeadline'))
 
-# tournament = results.find_all('a', class_='tourney-title')
+i = 0
 
-# print(tournament[0].text)
+
+while i < num:
+    tournament_names = all_scores.find_all('div', class_='scoreHeadline')
+    name = tournament_names[i].a.text
+    print(name)
+    
+    tournament_round = all_scores.find_all('div', class_='matchTitle')
+    round = tournament_round[i].text
+    print(round)
+    
+    print()
+    i+=1
+    
+
+
+# results = s.select('#lastEventsPlayedStandAloneNoSlider > div > div > div.rsContent.rsActiveSlide > div > table > tbody > tr > td.title-content')
+# print(results[0].getText())
+
+# tournament = results.find_all('a', class_='scoreHeadline')
+
